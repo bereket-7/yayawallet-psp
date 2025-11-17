@@ -2,7 +2,11 @@ package service
 
 import (
 	"bytes"
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 
@@ -43,16 +47,6 @@ func (s *YayaService) CreatePayment(c *gin.Context) {
     c.Data(resp.StatusCode, "application/json", body)
 }
 
-func (s *YayaService) HandleWebhook(c *gin.Context) {
-    var payload map[string]interface{}
-    if err := c.BindJSON(&payload); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid payload"})
-        return
-    }
-    c.JSON(http.StatusOK, gin.H{"status": "received", "data": payload})
-}
-
-
 func (s *YayaService) CreatePaymentIntent(c *gin.Context) {
     var req model.PaymentIntentRequest
 
@@ -80,4 +74,51 @@ func (s *YayaService) CreatePaymentIntent(c *gin.Context) {
 
     body, _ := io.ReadAll(resp.Body)
     c.Data(resp.StatusCode, "application/json", body)
+}
+
+func (s *YayaService) HandleWebhook(c *gin.Context) {
+    signature := c.GetHeader("X-Payment-Signature")
+    if signature == "" {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "missing signature"})
+        return
+    }
+
+    var payload model.YayaCallbackRequest
+    if err := c.BindJSON(&payload); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid payload"})
+        return
+    }
+
+    // Step 1: Concatenate paymentId + paymentReference + amount
+    raw := payload.PaymentId + payload.PaymentReference + formatAmount(payload.Amount)
+
+    // Step 2: Generate HMAC SHA-256
+    expected := computeHMAC(raw, s.cfg.ClientSecret)
+
+    // Step 3: Compare signatures
+    if !hmac.Equal([]byte(signature), []byte(expected)) {
+        c.JSON(http.StatusUnauthorized, gin.H{
+            "error":       "invalid signature",
+            "received":    signature,
+            "expected":    expected,
+            "stringified": raw,
+        })
+        return
+    }
+
+    // TODO: Store or forward to FenanPay
+    // TODO: Implement idempotency using transactionId or paymentId
+
+    c.JSON(http.StatusOK, gin.H{"status": "ok"})
+}
+
+func formatAmount(a float64) string {
+    return fmt.Sprintf("%.0f", a) 
+}
+
+func computeHMAC(message, secret string) string {
+    key := []byte(secret)
+    h := hmac.New(sha256.New, key)
+    h.Write([]byte(message))
+    return hex.EncodeToString(h.Sum(nil))
 }
