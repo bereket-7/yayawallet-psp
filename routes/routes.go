@@ -13,5 +13,6 @@ func RegisterRoutes(r *gin.Engine, cfg *config.Config) {
     {
         v1.POST("/payment", s.CreatePayment)
         v1.POST("/webhook/yaya", s.HandleWebhook)
+        v1.POST("/payment-intent", s.CreatePaymentIntent)
     }
 }
