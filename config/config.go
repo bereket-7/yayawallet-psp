@@ -11,6 +11,7 @@ type Config struct {
     Port        string
     YayaBaseURL string
     YayaApiKey  string
+    ClientSecret string `json:"CLIENT_SECRET"`
 }
 
 func Load() *Config {
@@ -19,6 +20,7 @@ func Load() *Config {
         Port:        getEnv("PORT", "8080"),
         YayaBaseURL: getEnv("YAYA_BASE_URL", "https://api.yayawallet.com/v1"),
         YayaApiKey:  os.Getenv("YAYA_API_KEY"),
+        ClientSecret: os.Getenv("YAYA_CLIENT_SECRET"),
     }
     if cfg.YayaApiKey == "" {
         log.Fatal("Missing YAYA_API_KEY")
