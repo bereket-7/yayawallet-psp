@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"yayawallet-psp/config"
+	"yayawallet-psp/model"
 
 	"github.com/gin-gonic/gin"
 )
@@ -49,4 +50,34 @@ func (s *YayaService) HandleWebhook(c *gin.Context) {
         return
     }
     c.JSON(http.StatusOK, gin.H{"status": "received", "data": payload})
+}
+
+
+func (s *YayaService) CreatePaymentIntent(c *gin.Context) {
+    var req model.PaymentIntentRequest
+
+    if err := c.BindJSON(&req); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request", "details": err.Error()})
+        return
+    }
+
+    payload, _ := json.Marshal(req)
+
+    yayaReq, _ := http.NewRequest("POST",
+        s.cfg.YayaBaseURL+"/api/payment-intent",
+        bytes.NewReader(payload),
+    )
+
+    yayaReq.Header.Add("Authorization", "Bearer "+s.cfg.YayaApiKey)
+    yayaReq.Header.Add("Content-Type", "application/json")
+
+    resp, err := http.DefaultClient.Do(yayaReq)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+    defer resp.Body.Close()
+
+    body, _ := io.ReadAll(resp.Body)
+    c.Data(resp.StatusCode, "application/json", body)
 }
