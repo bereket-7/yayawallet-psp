@@ -58,7 +58,7 @@ func (s *YayaService) CreatePaymentIntent(c *gin.Context) {
     payload, _ := json.Marshal(req)
 
     yayaReq, _ := http.NewRequest("POST",
-        s.cfg.YayaBaseURL+"/api/payment-intent",
+        s.cfg.YayaBaseURL + "/payment-intent",
         bytes.NewReader(payload),
     )
 
