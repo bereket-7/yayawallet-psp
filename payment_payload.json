@@ -1,10 +1,15 @@
 {
   "bankBic": "YAYAETAA",
-  "bankAccount": "0987654321",
+  "bankAccount": "antenehgebey",
   "amount": 10,
-  "paymentReference": "INV-001",
-  "description": "Test payment",
+  "paymentReference": "INV-083405",
+  "description": "June bill",
   "feeOnMerchant": true,
-  "returnUrl": "https://test.com/return",
-  "callbackUrl": "https://fenanpay.com/api/v1/webhook/yaya"
+  "returnUrl": "https://fenanpay.com/thank-you",
+  "callbackUrl": "https://fenanpay.com/api/v1/webhook/yaya",
+  "meta_data": {
+    "customer_id": "1239344",
+    "customer_name": "Abebe Kebede",
+    "customer_phone": "0911059599"
+  }
 }
