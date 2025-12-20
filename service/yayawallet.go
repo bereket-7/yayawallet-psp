@@ -89,13 +89,10 @@ func (s *YayaService) HandleWebhook(c *gin.Context) {
         return
     }
 
-    // Step 1: Concatenate paymentId + paymentReference + amount
     raw := payload.PaymentId + payload.PaymentReference + formatAmount(payload.Amount)
 
-    // Step 2: Generate HMAC SHA-256
     expected := computeHMAC(raw, s.cfg.ClientSecret)
 
-    // Step 3: Compare signatures
     if !hmac.Equal([]byte(signature), []byte(expected)) {
         c.JSON(http.StatusUnauthorized, gin.H{
             "error":       "invalid signature",
@@ -105,9 +102,6 @@ func (s *YayaService) HandleWebhook(c *gin.Context) {
         })
         return
     }
-
-    // TODO: Store or forward to FenanPay
-    // TODO: Implement idempotency using transactionId or paymentId
 
     c.JSON(http.StatusOK, gin.H{"status": "ok"})
 }
