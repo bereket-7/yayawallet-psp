@@ -26,7 +26,6 @@ func Load() *Config {
 		Env:              getEnv("ENV", "local"),
 	}
 
-	// Required checks
 	if cfg.YayaClientID == "" {
 		log.Fatal("Missing YAYA_CLIENT_ID")
 	}
