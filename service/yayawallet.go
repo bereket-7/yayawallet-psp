@@ -67,30 +67,6 @@ func (s *YayaService) getAccessToken() (string, error) {
     return tokenResp.AccessToken, nil
 }
 
-
-// func (s *YayaService) CreatePayment(c *gin.Context) {
-//     var req map[string]interface{}
-//     if err := c.BindJSON(&req); err != nil {
-//         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-//         return
-//     }
-
-//     data, _ := json.Marshal(req)
-//     httpReq, _ := http.NewRequest("POST", s.cfg.YayaBaseURL+"/payments", bytes.NewReader(data))
-//     httpReq.Header.Add("Authorization", "Bearer "+s.cfg.YayaApiKey)
-//     httpReq.Header.Add("Content-Type", "application/json")
-
-//     resp, err := http.DefaultClient.Do(httpReq)
-//     if err != nil {
-//         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-//         return
-//     }
-//     defer resp.Body.Close()
-
-//     body, _ := io.ReadAll(resp.Body)
-//     c.Data(resp.StatusCode, "application/json", body)
-// }
-
 func (s *YayaService) CreatePaymentIntent(c *gin.Context) {
     var req model.PaymentIntentRequest
 
@@ -128,65 +104,6 @@ func (s *YayaService) CreatePaymentIntent(c *gin.Context) {
     body, _ := io.ReadAll(resp.Body)
     c.Data(resp.StatusCode, "application/json", body)
 }
-
-// func (s *YayaService) CreatePaymentIntent(c *gin.Context) {
-//     var req model.PaymentIntentRequest
-
-//     if err := c.BindJSON(&req); err != nil {
-//         c.JSON(http.StatusBadRequest, gin.H{
-//             "error":   "invalid request",
-//             "details": err.Error(),
-//         })
-//         return
-//     }
-
-//     payload, err := json.Marshal(req)
-//     if err != nil {
-//         c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to marshal payload"})
-//         return
-//     }
-
-//     url := s.cfg.YayaBaseURL + "/payment-intent"
-
-//     fmt.Println("========== YAYA PAYMENT INTENT ==========")
-//     fmt.Println("URL:", url)
-//     fmt.Println("Method: POST")
-//     fmt.Println("Headers:")
-//     fmt.Println("  Authorization: Bearer ****", len(s.cfg.YayaApiKey))
-//     fmt.Println("  Content-Type: application/json")
-//     fmt.Println("Payload:")
-//     fmt.Println(string(payload))
-//     fmt.Println("=========================================")
-
-//     yayaReq, err := http.NewRequest("POST", url, bytes.NewReader(payload))
-//     if err != nil {
-//         c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create request"})
-//         return
-//     }
-
-//     yayaReq.Header.Set("Authorization", "Bearer "+s.cfg.YayaApiKey)
-//     yayaReq.Header.Set("Content-Type", "application/json")
-//     yayaReq.Header.Set("Accept", "application/json")
-//     yayaReq.Header.Set("User-Agent", "yayawallet-psp/1.0")
-
-//     resp, err := http.DefaultClient.Do(yayaReq)
-//     if err != nil {
-//         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-//         return
-//     }
-//     defer resp.Body.Close()
-
-//     body, _ := io.ReadAll(resp.Body)
-
-//     fmt.Println("========== YAYA RESPONSE ==========")
-//     fmt.Println("Status:", resp.Status)
-//     fmt.Println("Headers:", resp.Header)
-//     fmt.Println("Body:")
-//     fmt.Println(string(body))
-//     fmt.Println("===================================")
-
-//     c.Data(resp.StatusCode, "application/json", body)
-// }
 
 func (s *YayaService) HandleWebhook(c *gin.Context) {
     signature := c.GetHeader("X-Payment-Signature")
