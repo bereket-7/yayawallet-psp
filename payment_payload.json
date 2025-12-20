@@ -1,0 +1,10 @@
+{
+  "bankBic": "YAYAETAA",
+  "bankAccount": "0987654321",
+  "amount": 10,
+  "paymentReference": "INV-001",
+  "description": "Test payment",
+  "feeOnMerchant": true,
+  "returnUrl": "https://test.com/return",
+  "callbackUrl": "https://fenanpay.com/api/v1/webhook/yaya"
+}
