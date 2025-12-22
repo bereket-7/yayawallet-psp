@@ -9,9 +9,9 @@ import (
 
 func RegisterRoutes(r *gin.Engine, cfg *config.Config) {
     s := service.NewYayaService(cfg)
-    v1 := r.Group("/api/v1")
+    v1 := r.Group("/")
     {
-        v1.POST("/webhook/yaya", s.HandleWebhook)
-        v1.POST("/payment-intent", s.CreatePaymentIntent)
+        v1.POST("webhook", s.HandleWebhook)
+        v1.POST("pay", s.CreatePaymentIntent)
     }
 }
